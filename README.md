@@ -64,7 +64,7 @@ Sometimes, you may wish to keep certain credentials in separate files from the r
 ```yaml
 ---
 flightdeck_varnish:
-  secretFile: "/config/varnish-secret.txt"
+  secretFile: "/config/varnish-secret/secret.txt"
 ```
 
 Where:
@@ -98,7 +98,7 @@ flightdeck_cluster:
     replicas: 1
     configMaps:
       - name: "flight-deck-varnish"
-        path: "/config"
+        path: "/config/varnish"
 ```
 
 ## Using with Docker Compose
@@ -114,7 +114,7 @@ services:
       - 6081:6081
       - 6082:6082
     volumes:
-      - ./flight-deck-varnish.yml:/config/flight-deck-varnish.yml
+      - ./flight-deck-varnish.yml:/config/varnish/flight-deck-varnish.yml
 ```
 
 ## Part of Flight Deck
