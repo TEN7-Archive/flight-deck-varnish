@@ -71,6 +71,37 @@ Where:
 
 * **secretFile** is the path in the container to the file containing the varnish secret.
 
+### Excluding paths from caching
+
+Some paths, such administration paths, key user interaction paths should not be cached by varnish. If the user login page is cached, for example, you may not be able to login, as Varnish would return the un-logged in HTML each time.
+
+You can configure which items always bypass the cache in the configuration file:
+
+```yaml
+---
+flightdeck_varnish:
+  skipCache:
+    - "^/status\\.php$"
+    - "^/update\\.php"
+    - "^/install\\.php"
+    - "^/wp-login\\.php$"
+    - "^/apc\\.php$"
+    - "^/admin"
+    - "^/admin/.*$"
+    - "^/user"
+    - "^/user/.*$"
+    - "^/users/.*$"
+    - "^/info/.*$"
+    - "^/flag/.*$"
+    - "^/wp-admin/.*$"
+    - "^.*/ahah/.*$"
+    - "^/system/files/.*$"
+```
+
+Where:
+
+* **skipCache** is a list of regular expressions which match URL paths to skip caching. Note, YAML needs backslashes to be escaped with another backslash. Optional, the container will skip best practice Drupal and Wordpress paths.
+
 ## Deployment on Kubernetes
 
 Use the [`ten7.flightdeck_cluster`](https://galaxy.ansible.com/ten7/flightdeck_cluster) role on Ansible Galaxy to deploy DB as a statefulset:

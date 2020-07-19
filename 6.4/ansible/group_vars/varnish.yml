@@ -19,4 +19,30 @@ flightdeck_run_commands: |
     ansible-playbook -i /ansible/inventories/all.ini /ansible/run.yml
   fi
 
-flightdeck_varnish: {}
+flightdeck_varnish:
+
+flightdeck_varnish_defaults:
+  backends:
+   - name: "default"
+     host: "localhost"
+     port: "80"
+  skipCache:
+    - "^/status\\.php$"
+    - "^/update\\.php"
+    - "^/install\\.php"
+    - "^/wp-login\\.php$"
+    - "^/apc\\.php$"
+    - "^/admin"
+    - "^/admin/.*$"
+    - "^/user"
+    - "^/user/.*$"
+    - "^/users/.*$"
+    - "^/info/.*$"
+    - "^/flag/.*$"
+    - "^/wp-admin/.*$"
+    - "^.*/ahah/.*$"
+    - "^/system/files/.*$"
+  secret: "secretish"
+  hostPort: "6081"
+  controlPort: "6082"
+  memSize: "256m"

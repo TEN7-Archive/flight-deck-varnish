@@ -47,21 +47,9 @@ sub vcl_recv {
   }
 
   # Do not cache these paths.
-  if (req.url ~ "^/status\.php$" ||
-      req.url ~ "^/update\.php" ||
-      req.url ~ "^/install\.php" ||
-      req.url ~ "^/wp-login\.php$" ||
-      req.url ~ "^/apc\.php$" ||
-      req.url ~ "^/admin" ||
-      req.url ~ "^/admin/.*$" ||
-      req.url ~ "^/user" ||
-      req.url ~ "^/user/.*$" ||
-      req.url ~ "^/users/.*$" ||
-      req.url ~ "^/info/.*$" ||
-      req.url ~ "^/flag/.*$" ||
-      req.url ~ "^.*/ahah/.*$" ||
-      req.url ~ "^.*/wp-admin/.*$" ||
-      req.url ~ "^/system/files/.*$") {
+  if ({% for _pattern in flightdeck_varnish.skipCache | default(flightdeck_varnish_defaults.skipCache) %}
+      req.url ~ "{{ _pattern }}" {{ "||" if not loop.last }}
+     {% endfor %}) {
 
       return (pass);
   }
