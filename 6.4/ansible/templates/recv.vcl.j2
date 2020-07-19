@@ -50,6 +50,7 @@ sub vcl_recv {
   if (req.url ~ "^/status\.php$" ||
       req.url ~ "^/update\.php" ||
       req.url ~ "^/install\.php" ||
+      req.url ~ "^/wp-login\.php$" ||
       req.url ~ "^/apc\.php$" ||
       req.url ~ "^/admin" ||
       req.url ~ "^/admin/.*$" ||
@@ -58,8 +59,8 @@ sub vcl_recv {
       req.url ~ "^/users/.*$" ||
       req.url ~ "^/info/.*$" ||
       req.url ~ "^/flag/.*$" ||
-      req.url ~ "^.*/ajax/.*$" ||
       req.url ~ "^.*/ahah/.*$" ||
+      req.url ~ "^.*/wp-admin/.*$" ||
       req.url ~ "^/system/files/.*$") {
 
       return (pass);

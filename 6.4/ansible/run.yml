@@ -41,11 +41,12 @@
           dest: "/var/lib/varnish/varnish-foreground.sh"
     - name: Provision the varnish secret
       copy:
-        content: "{{ lookup('env', 'VARNISH_SECRET') | default(flightdeck_varnish.secret, true) }}"
+        content: "{{ lookup('env', 'VARNISH_SECRET') | default(_secret, true) }}"
         dest: "/etc/varnish/secret"
         owner: "varnish"
         group: "varnish"
         mode: "u=r,g=r,o="
+      vars:
+        _secret: "{{ flightdeck_varnish.secret | default('secret') }}"
       when:
         - flightdeck_varnish.secretFile is not defined
-        - (flightdeck_varnish.secret is defined) or (lookup('env', 'VARNISH_SECRET') != '')
