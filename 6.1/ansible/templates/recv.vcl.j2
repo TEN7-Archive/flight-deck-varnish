@@ -4,6 +4,10 @@ sub vcl_recv {
   # Use a director in the case we have multiple backends.
   set req.backend_hint = bar.backend();
 
+  #if (req.restarts > 0) {
+  #  set req.hash_always_miss = true;
+  #}
+
   if (req.method == "PURGE") {
     if (!client.ip ~ purge) {
       return(synth(405,"Purge not allowed."));
