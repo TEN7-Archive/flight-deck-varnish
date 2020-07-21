@@ -33,5 +33,6 @@ sub vcl_hit {
     }
   }
 
-  return (restart);
+  # Originally, there was a return (miss) here, but it doesn't seem right,
+  # and return (restart) isn't either...
 }
