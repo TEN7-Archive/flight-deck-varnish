@@ -19,13 +19,28 @@ flightdeck_run_commands: |
     ansible-playbook -i /ansible/inventories/all.ini /ansible/run.yml
   fi
 
-flightdeck_varnish:
+flightdeck_varnish: {}
+
+flightdeck_varnish_default_backend:
+  name: "default"
+  host: "{{ lookup('env', 'VARNISH_BACKEND_HOST') | default('localhost', true) }}"
+  port: "{{ lookup('env', 'VARNISH_BACKEND_PORT') | default('80', true) }}"
+  probe: yes
+  probeInterval: "15s"
+  probeTimeout: "5s"
+  probeThreshold: 3
+  probeWindow: 5
+  firstByteTimeout: "300s"
+  connectTimeout: "5s"
+  betweenBytesTimeout: "2s"
 
 flightdeck_varnish_defaults:
+  upstreamProxies: {}
+  retryCount: 3
+  grace: "6h"
+  staticTtl: "15m"
   backends:
-   - name: "default"
-     host: "localhost"
-     port: "80"
+    - "{{ flightdeck_varnish_default_backend }}"
   skipCache:
     - "^/status\\.php$"
     - "^/update\\.php"
@@ -40,8 +55,15 @@ flightdeck_varnish_defaults:
     - "^/info/.*$"
     - "^/flag/.*$"
     - "^/wp-admin/.*$"
+    - "^/edit.php$"
+    - "^/post.php$"
+    - "^/wp-cron.php$"
     - "^.*/ahah/.*$"
     - "^/system/files/.*$"
+    - "^/s3/.$"
+    - "^/s3fs-css/.$"
+    - "^/s3fs-js/.$"
+    - "^/_flysystem/.$"
   secret: "secretish"
   hostPort: "6081"
   controlPort: "6082"

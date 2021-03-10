@@ -1,5 +1,10 @@
 # In the event of an error, show friendlier messages.
 sub vcl_backend_error {
+  # Retry the request if so set.
+  if ( bereq.retries < {{ flightdeck_varnish.retryCount | default(flightdeck_varnish_defaults.retryCount) }} ) {
+    return (retry);
+  }
+
   set beresp.http.Content-Type = "text/html; charset=utf-8";
   synthetic ({"
 {% if flightdeck_varnish.errorPage is defined %}

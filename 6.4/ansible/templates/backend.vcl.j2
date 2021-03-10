@@ -4,13 +4,12 @@
 #
 # Default backend definition.  Set this to point to your content
 # server.
-{% if flightdeck_varnish.backends is defined %}
-{% for _backend in flightdeck_varnish.backends %}
+{% for _backend in flightdeck_varnish.backends | default(flightdeck_varnish_defaults.backends) %}
 backend {{ _backend.name }} {
   .host = "{{ _backend.host | default('localhost') }}";
   .port = "{{ _backend.port | default('80') }}";
 
-{% if _backend.probe is defined %}
+{% if _backend.probe | default(flightdeck_varnish_defaults.probe) %}
   .probe = {
     # We use .request instead of .url because we need to force-set a valid
     # URL to Apache. If we don't, Varnish will mark it has sick and 503.
@@ -20,28 +19,19 @@ backend {{ _backend.name }} {
     "Connection: close";
 
     # How often to check the backend health.
-    .interval  = {{ _backend.probe.interval | default('15s') }};
+    .interval  = {{ _backend.probe.probeInterval | default(flightdeck_varnish_default_backend.probeInterval) }};
 
     # How long to wait on each individual check.
-    .timeout   = {{ _backend.probe.timeout | default('5s') }};
+    .timeout   = {{ _backend.probe.probeTimeout | default(flightdeck_varnish_default_backend.probeTimeout) }};
 
     # If .threshold checks fail of the last .window times, mark the BE as sick.
-    .threshold = {{ _backend.probe.threshold | default('3') }};
-    .window    = {{ _backend.probe.window | default('5') }};
- }
+    .threshold = {{ _backend.probe.probeThreshold | default(flightdeck_varnish_default_backend.probeThreshold) }};
+    .window    = {{ _backend.probe.probeWindow | default(flightdeck_varnish_default_backend.probeWindow) }};
+  }
 {% endif %}
 
-  .first_byte_timeout     = 300s;
-  .connect_timeout        = 5s;
-  .between_bytes_timeout  = 2s;
+  .first_byte_timeout     = {{ _backend.probe.firstByteTimeout | default(flightdeck_varnish_default_backend.firstByteTimeout) }};
+  .connect_timeout        = {{ _backend.probe.connectTimeout | default(flightdeck_varnish_default_backend.connectTimeout) }};
+  .between_bytes_timeout  = {{ _backend.probe.betweenBytesTimeout | default(flightdeck_varnish_default_backend.betweenBytesTimeout) }};
 }
 {% endfor %}
-{% else %}
-backend default {
-  .host = "{{ lookup('env', 'VARNISH_BACKEND_HOST') | default('localhost', true) }}";
-  .port = "{{ lookup('env', 'VARNISH_BACKEND_PORT') | default('80', true) }}";
-  .first_byte_timeout     = 300s;
-  .connect_timeout        = 5s;
-  .between_bytes_timeout  = 2s;
-}
-{% endif %}

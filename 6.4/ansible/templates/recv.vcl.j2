@@ -34,11 +34,21 @@ sub vcl_recv {
     set req.http.X-Forwarded-For = regsub(client.ip, ":.*", "");
   }
 
+  // Pass AJAX requests.
+  if (req.http.X-Requested-With == "XMLHttpRequest") {
+    return (pass);
+  }
+
+  // Pass POST requests.
+  if (req.http.Authorization || req.method == "POST") {
+    return (pass);
+  }
+
   # Protecting against the HTTPOXY CGI vulnerability.
   unset req.http.proxy;
 
-  # Set the grace custom header to "none", it may be overriden in vcl_hit().
-  set req.http.grace = "none";
+  # Set the grace custom header to "none", it may be overridden in vcl_hit().
+  set req.http.X-Varnish-Grace = "none";
 
   # Deal with GET and HEAD  requests only, everything else gets through
   if (req.method != "GET" &&
@@ -50,7 +60,6 @@ sub vcl_recv {
   if ({% for _pattern in flightdeck_varnish.skipCache | default(flightdeck_varnish_defaults.skipCache) %}
       req.url ~ "{{ _pattern }}" {{ "||" if not loop.last }}
      {% endfor %}) {
-
       return (pass);
   }
 
