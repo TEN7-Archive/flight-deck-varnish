@@ -27,6 +27,13 @@ sub vcl_recv {
     return(synth(200, "Ban added"));
   }
 
+  // Add a synth response for external healthchecks.
+{% if flightdeck_varnish.statusCheck | default(flightdeck_varnish_defaults.statusCheck) %}
+  if (req.url ~ "{{ flightdeck_varnish.statusCheckUrl | default(flightdeck_varnish_defaults.statusCheckUrl) }}") {
+    return (synth(200, "{{ flightdeck_varnish.statusCheckMessage | default(flightdeck_varnish_defaults.statusCheckMessage) }}"));
+  }
+{% endif %}
+
   # Pass the X-Forwarded-For IP, if any. Otherwise use the upstream proxy IP.
   if (client.ip ~ upstream_proxy && req.http.X-Forwarded-For) {
     set req.http.X-Forwarded-For = req.http.X-Forwarded-For;
