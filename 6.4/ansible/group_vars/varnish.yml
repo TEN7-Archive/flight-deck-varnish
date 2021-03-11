@@ -25,7 +25,8 @@ flightdeck_varnish_default_backend:
   name: "default"
   host: "{{ lookup('env', 'VARNISH_BACKEND_HOST') | default('localhost', true) }}"
   port: "{{ lookup('env', 'VARNISH_BACKEND_PORT') | default('80', true) }}"
-  probe: yes
+  probe: no
+  probeHost: "{{ lookup('env', 'VARNISH_BACKEND_HOST') | default('localhost', true) }}"
   probeInterval: "15s"
   probeTimeout: "5s"
   probeThreshold: 3
@@ -65,7 +66,6 @@ flightdeck_varnish_defaults:
     - "^/s3fs-js/.$"
     - "^/_flysystem/.$"
   keepCookies:
-    # - (SESS[a-z0-9]+|SSESS[a-z0-9]+|NO_CACHE|XDEBUG_SESSION)
     - "SESS[a-z0-9]+"
     - "SSESS[a-z0-9]+"
     - "NO_CACHE"
@@ -74,6 +74,9 @@ flightdeck_varnish_defaults:
     - "wordpress_sec_[a-z0-9]+"
     - "wp-settings-[0-9]+"
     - "wp-settings-time-[0-9]+"
+  statusCheck: yes
+  statusCheckUrl: "^/__flight\\-deck\\-status$"
+  statusCheckMessage: "Check successful"
   secret: "secretish"
   hostPort: "6081"
   controlPort: "6082"
