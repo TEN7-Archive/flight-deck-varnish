@@ -64,6 +64,16 @@ flightdeck_varnish_defaults:
     - "^/s3fs-css/.$"
     - "^/s3fs-js/.$"
     - "^/_flysystem/.$"
+  keepCookies:
+    # - (SESS[a-z0-9]+|SSESS[a-z0-9]+|NO_CACHE|XDEBUG_SESSION)
+    - "SESS[a-z0-9]+"
+    - "SSESS[a-z0-9]+"
+    - "NO_CACHE"
+    - "XDEBUG_SESSION"
+    - "wordpress_logged_in_[a-z0-9]+"
+    - "wordpress_sec_[a-z0-9]+"
+    - "wp-settings-[0-9]+"
+    - "wp-settings-time-[0-9]+"
   secret: "secretish"
   hostPort: "6081"
   controlPort: "6082"

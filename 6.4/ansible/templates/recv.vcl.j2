@@ -44,6 +44,11 @@ sub vcl_recv {
     return (pass);
   }
 
+  // Pass requests with an Authorization header set.
+  if (req.http.Authorization) {
+    return(pass);
+  }
+
   # Protecting against the HTTPOXY CGI vulnerability.
   unset req.http.proxy;
 
@@ -81,7 +86,9 @@ sub vcl_recv {
 
     # 3. Match the cookies we want to keep, adding the space we removed
     #    previously back. (\1) is first matching group in the regsuball.
-    set req.http.Cookie = regsuball(req.http.Cookie, ";(SESS[a-z0-9]+|SSESS[a-z0-9]+|NO_CACHE|XDEBUG_SESSION)=", "; \1=");
+{% for _pattern in flightdeck_varnish.keepCookies | default(flightdeck_varnish_defaults.keepCookies) %}
+    set req.http.Cookie = regsuball(req.http.Cookie, ";({{ _pattern }})=", "; \1=");
+{% endfor %}
 
     # 4. Remove all other cookies, identifying them by the fact that they have
     #    no space after the preceding semi-colon.
@@ -99,8 +106,13 @@ sub vcl_recv {
     }
     else {
       # If there is any cookies left (a session or NO_CACHE cookie), do not
-      # cache the page. Pass it on to Apache directly.
+      # cache the page. Pass it on directly.
       return (pass);
     }
   }
+
+  // Normalize the query parameters so we aren't double caching.
+  set req.url = std.querysort(req.url);
+
+  return (hash);
 }
