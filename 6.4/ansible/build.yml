@@ -9,6 +9,7 @@
         state: present
         update_cache: yes
       loop:
+        - "curl"
         - "varnish"
       notify:
         - clear apk cache
