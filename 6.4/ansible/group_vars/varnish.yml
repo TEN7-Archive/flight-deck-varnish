@@ -46,6 +46,7 @@ flightdeck_varnish_defaults:
     - "^/status\\.php$"
     - "^/update\\.php"
     - "^/install\\.php"
+    - "^/core/install\\.php"
     - "^/wp-login\\.php$"
     - "^/apc\\.php$"
     - "^/admin"
@@ -61,10 +62,6 @@ flightdeck_varnish_defaults:
     - "^/wp-cron.php$"
     - "^.*/ahah/.*$"
     - "^/system/files/.*$"
-    - "^/s3/.$"
-    - "^/s3fs-css/.$"
-    - "^/s3fs-js/.$"
-    - "^/_flysystem/.$"
   keepCookies:
     - "SESS[a-z0-9]+"
     - "SSESS[a-z0-9]+"
