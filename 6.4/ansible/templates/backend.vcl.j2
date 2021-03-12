@@ -15,7 +15,7 @@ backend {{ _backend.name }} {
     # URL to Apache. If we don't, Varnish will mark it has sick and 503.
     .request =
     "HEAD / HTTP/1.1"
-    "Host: {{ _backend.host | default(flightdeck_varnish_default_backend.probeHost) }}"
+    "Host: {{ _backend.probeHost | default(flightdeck_varnish_default_backend.probeHost) }}"
     "Connection: close";
 
     # How often to check the backend health.

@@ -71,6 +71,56 @@ Where:
 
 * **secretFile** is the path in the container to the file containing the varnish secret.
 
+### Controlling backend timeouts
+
+Depending on your application, you may need to specify a particular series of timeouts in order for Varnish to consider your backend "healthy". You can specify these per backend:
+
+```yaml
+---
+flightdeck_varnish:
+  backends:
+    - name: "default"
+      host: "web"
+      port: "80"
+      firstByteTimeout: "300s"
+      connectTimeout: "5s"
+      betweenBytesTimeout: "2s"
+```
+
+Where:
+
+* **firstByteTimeout** is the amount of time to wait for the bakend to return the first byte. Optional, default is 300 seconds.
+* **connectTimeout** is the amount of time to wait when establishing a connection to the backend. Optional, default is 5 seconds.
+* **betweenBytesTimeout** is the time to wait between each byte. Optional, default is 2 seconds.
+
+### Probing health
+
+Varnish can routinuely check the health of the backend through a "probe".
+
+```yaml
+---
+flightdeck_varnish:
+  backends:
+    - name: "default"
+      host: "web"
+      port: "80"
+      probe: no
+      probeHost: "www.example.com"
+      probeInterval: "15s"
+      probeTimeout: "5s"
+      probeThreshold: 3
+      probeWindow: 5
+```
+
+Where:
+
+* **probe** is enables (`yes`) or disables (`no`) probe behavior. Optional, default is `no`.
+* **probeHost** is the hostname to pass to the backend when doing the probe. Some content managers like Drupal expect a particular hostname and will fail without it. Optional, defaults to `localhost`.
+* **probeInterval** is the time in seconds to conduct the probe. Optional, default is 15 seconds.
+* **probeTimeout** is the time to wait for a response when probing. Optional, defaults to 5 seconds.
+* **probeThreshold** is the amount of probes which must succeed within the last number of probe attempts specified by **probeWindow**. Optional, defaults to 3.
+* **probeWindow** is the number of probe attempts to consider when checking the probe. Optional, defaults to 5.
+
 ### Excluding paths from caching
 
 Some paths, such administration paths, key user interaction paths should not be cached by varnish. If the user login page is cached, for example, you may not be able to login, as Varnish would return the un-logged in HTML each time.
@@ -101,6 +151,45 @@ flightdeck_varnish:
 Where:
 
 * **skipCache** is a list of regular expressions which match URL paths to skip caching. Note, YAML needs backslashes to be escaped with another backslash. Optional, the container will skip best practice Drupal and Wordpress paths.
+
+### Excluding cookies from caching
+
+Often, you may wish to skip caching based on the presence of key cookies. You can configure which ones using `keepCookies`:
+```yaml
+---
+flightdeck_varnish:
+  keepCookies:
+    - "SESS[a-z0-9]+"
+    - "SSESS[a-z0-9]+"
+    - "NO_CACHE"
+    - "XDEBUG_SESSION"
+    - "wordpress_logged_in_[a-z0-9]+"
+    - "wordpress_sec_[a-z0-9]+"
+    - "wp-settings-[0-9]+"
+    - "wp-settings-time-[0-9]+"
+```
+
+Where:
+
+* **keepCookies** is a list of regular expressions which match cookie names (not values). Optional, the container will skip best practice Drupal and Wordpress paths.
+
+### Customizing the error page
+
+Often, you may wish to skip caching based on the presence of key cookies. You can configure which ones using `keepCookies`:
+```yaml
+---
+flightdeck_varnish:
+  errorPage: |
+    <html>
+    <body>
+    Something is broken!
+    </body>
+    </html>
+```
+
+Where:
+
+* **errorPage** is the HTML to display due to a varnish error.
 
 ## Deployment on Kubernetes
 
