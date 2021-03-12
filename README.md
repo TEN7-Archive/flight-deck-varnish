@@ -13,7 +13,8 @@ There are several tags available for this container, each with different Solr an
 
 | Varnish version | Tags |
 | --------------- | ---- |
-| 6.1 | 6, latest |
+| 6.4 | 6, latest |
+| 6.1 | 6.1 |
 
 ## Configuration
 
@@ -172,6 +173,22 @@ flightdeck_varnish:
 Where:
 
 * **keepCookies** is a list of regular expressions which match cookie names (not values). Optional, the container will skip best practice Drupal and Wordpress paths.
+
+### Controlling cache times
+
+By default, any responses from the backend will be cached in accordance with the max-age header. There are two additional parmeters which allows you to control caching:
+
+```yaml
+---
+flightdeck_varnish:
+  grace: "6h"
+  staticTtl: "15m"
+```
+
+Where:
+
+* **grace** is the time in hours to retain cached content in "grace", that is, beyond the value of the max-age header when set.
+* **staticTtl** is the amount of time to cache static content according to file extension.
 
 ### Customizing the error page
 
