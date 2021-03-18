@@ -16,6 +16,9 @@ backend {{ _backend.name }} {
     .request =
     "HEAD / HTTP/1.1"
     "Host: {{ _backend.probeHost | default(flightdeck_varnish_default_backend.probeHost) }}"
+    {% for _header in _backend.probeHeaders | default(flightdeck_varnish_default_backend.probeHeaders) %}
+    "{{ _header.name }}: {{ _header.value }}"
+    {% endfor %}
     "Connection: close";
 
     # How often to check the backend health.
