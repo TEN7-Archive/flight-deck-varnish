@@ -1,5 +1,5 @@
 ---
-flighdeck_motd_name: Varnish 6.1
+flighdeck_motd_name: Varnish 6.4
 
 flightdeck_groups:
   - name: "varnish"
@@ -27,6 +27,7 @@ flightdeck_varnish_default_backend:
   port: "{{ lookup('env', 'VARNISH_BACKEND_PORT') | default('80', true) }}"
   probe: no
   probeHost: "{{ lookup('env', 'VARNISH_BACKEND_HOST') | default('localhost', true) }}"
+  probeHeaders: []
   probeInterval: "15s"
   probeTimeout: "5s"
   probeThreshold: 3

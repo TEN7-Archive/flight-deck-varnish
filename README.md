@@ -107,6 +107,9 @@ flightdeck_varnish:
       port: "80"
       probe: no
       probeHost: "www.example.com"
+      probeHeaders:
+        - name: "X-Forwarded-Proto"
+          value: "https"
       probeInterval: "15s"
       probeTimeout: "5s"
       probeThreshold: 3
@@ -117,6 +120,7 @@ Where:
 
 * **probe** is enables (`yes`) or disables (`no`) probe behavior. Optional, default is `no`.
 * **probeHost** is the hostname to pass to the backend when doing the probe. Some content managers like Drupal expect a particular hostname and will fail without it. Optional, defaults to `localhost`.
+* **probeHeaders** is a list of name/value pairs of HTTP headers to pass to the backend during the probe. This is useful for passing the X-Forwarded-Proto if you are terminating HTTPS at your load balancer. Optional, defaults to no additional headers.
 * **probeInterval** is the time in seconds to conduct the probe. Optional, default is 15 seconds.
 * **probeTimeout** is the time to wait for a response when probing. Optional, defaults to 5 seconds.
 * **probeThreshold** is the amount of probes which must succeed within the last number of probe attempts specified by **probeWindow**. Optional, defaults to 3.
